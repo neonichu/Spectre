@@ -34,19 +34,19 @@ struct CaseFailure {
   }
 }
 
-extension CollectionType where Generator.Element == CaseFailure {
+extension Collection where Iterator.Element == CaseFailure {
   func print() {
     for failure in self {
-      let name = failure.position.joinWithSeparator(" ")
+      let name = failure.position.joined(separator: " ")
       Swift.print(ANSI.Red, name)
       let file = "\(failure.failure.file):\(failure.failure.line)"
       Swift.print("  \(ANSI.Bold)\(file)\(ANSI.Reset) \(ANSI.Yellow)\(failure.failure.reason)\(ANSI.Reset)\n")
 
 #if !os(Linux)
       if let contents = try? NSString(contentsOfFile: failure.failure.file, encoding: NSUTF8StringEncoding) as String {
-        let lines = contents.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
+        let lines = contents.componentsSeparatedByCharacters(in: .newline())
         let line = lines[failure.failure.line - 1]
-        let trimmedLine = line.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        let trimmedLine = line.trimmingCharacters(in: .whitespace())
         Swift.print("  ```")
         Swift.print("  \(trimmedLine)")
         Swift.print("  ```")
@@ -133,7 +133,7 @@ class StandardReporter : CountReporter {
   }
 
   func colour(colour: ANSI, _ message: String) {
-    let indentation = String(count: depth * 2, repeatedValue: " " as Character)
+    let indentation = String(repeating: " " as Character, count: depth * 2)
     print("\(indentation)\(colour)\(message)\(ANSI.Reset)")
   }
 }
@@ -172,7 +172,7 @@ class TapReporter : CountReporter {
     count += 1
     super.addSuccess(name)
 
-    let message = (position + [name]).joinWithSeparator(" ")
+    let message = (position + [name]).joined(separator: " ")
     print("ok \(count) - \(message)")
   }
 
@@ -180,7 +180,7 @@ class TapReporter : CountReporter {
     count += 1
     super.addDisabled(name)
 
-    let message = (position + [name]).joinWithSeparator(" ")
+    let message = (position + [name]).joined(separator: " ")
     print("ok \(count) - # skip \(message)")
   }
 
@@ -188,7 +188,7 @@ class TapReporter : CountReporter {
     count += 1
     super.addFailure(name, failure: failure)
 
-    let message = (position + [name]).joinWithSeparator(" ")
+    let message = (position + [name]).joined(separator: " ")
     print("not ok \(count) - \(message)")
     print("# \(failure.reason) from \(failure.file):\(failure.line)")
   }

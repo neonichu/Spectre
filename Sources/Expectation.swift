@@ -1,5 +1,5 @@
 public protocol ExpectationType {
-  typealias ValueType
+  associatedtype ValueType
   var expression: () throws -> ValueType? { get }
   func failure(reason: String) -> FailureType
 }
@@ -43,11 +43,11 @@ public class Expectation<T> : ExpectationType {
   }
 }
 
-public func expect<T>(@autoclosure(escaping) expression: () throws -> T?, file: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) -> Expectation<T> {
+public func expect<T>(@autoclosure(escaping) expression: () throws -> T?, file: String = #file, line: Int = #line, function: String = #function) -> Expectation<T> {
   return Expectation(file: file, line: line, function: function, expression: expression)
 }
 
-public func expect<T>(file: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__, expression: () throws -> T?)  -> Expectation<T> {
+public func expect<T>(file: String = #file, line: Int = #line, function: String = #function, expression: () throws -> T?)  -> Expectation<T> {
   return Expectation(file: file, line: line, function: function, expression: expression)
 }
 
@@ -117,7 +117,7 @@ extension ExpectationType {
   }
 
   public func toThrow<T: Equatable>(error: T) throws {
-    var thrownError: ErrorType? = nil
+    var thrownError: ErrorProtocol? = nil
 
     do {
       try expression()
